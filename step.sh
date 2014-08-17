@@ -62,7 +62,11 @@ echo "FTP_UPLOAD_TARGET_PATH: ${FTP_UPLOAD_TARGET_PATH}"
 let targets_last_index=${#FTP_UPLOAD_TARGET_PATH}-1
 if [[ -d "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
   # source: dir | target: dir
-  lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mirror -R ${FTP_UPLOAD_SOURCE_PATH} ${FTP_UPLOAD_TARGET_PATH%?}; bye"
+  if [ "${FTP_UPLOAD_TARGET_PATH:$targets_last_index:1}" = "/" ]; then
+    lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mirror -R ${FTP_UPLOAD_SOURCE_PATH} ${FTP_UPLOAD_TARGET_PATH%?}; bye"
+  else
+    lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mirror -R ${FTP_UPLOAD_SOURCE_PATH} ${FTP_UPLOAD_TARGET_PATH}; bye"
+  fi
 elif [[ -f "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
   if [ "${FTP_UPLOAD_TARGET_PATH:$targets_last_index:1}" = "/" ]; then
     # source: file | target: dir

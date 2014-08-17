@@ -15,10 +15,14 @@ Bitrise step to upload a single file or a folder to an FTP server
 	the password for the user of the target FTP
 - **FTP_UPLOAD_SOURCE_PATH**
 
-	the source path for the FTP upload; if path is a directory, and ends with "/", contents of the directory will be uploaded to the target path; otherwise, the directory will be uploaded to the target path
+	the source file or directory for the FTP upload
+
+	format: default (e. g. "./" or "$HOME/temp" or "$HOME/temp/")
 - **FTP_UPLOAD_TARGET_PATH**
 
-	the target path for the FTP upload; if source path is a file, target path is assumed to be target directory or target file, whether it does or does not end with "/"
+	the target path for the FTP upload; if source is file, target is directory if ends with "/", file otherwise
+
+	format: e. g. root directory: ""; directory "temp" in root directory: "temp/"; directory "backup" in directory "temp" in root directory: "temp/backup/"; file "example.dat" in directory "temp" in root directory: "temp/example.dat"
 
 # How to test/run locally?
 
