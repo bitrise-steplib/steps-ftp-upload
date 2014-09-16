@@ -15,11 +15,11 @@ inputs:
       Password
     mapped_to: FTP_PASSWORD
   - title: |
-      The source file or directory for the FTP upload.
+      The source (local) file or directory for the FTP upload.
       Format examples: "$HOME/temp" or "$HOME/temp/")
     mapped_to: FTP_UPLOAD_SOURCE_PATH
   - title: |
-      The target path for the FTP upload.
+      The target (remote) path for the FTP upload.
       Target is handled as directory if ends with "/", file otherwise.
       Format examples: "$HOME/temp" or "$HOME/temp/"; default is / (root)
     mapped_to: FTP_UPLOAD_TARGET_PATH
