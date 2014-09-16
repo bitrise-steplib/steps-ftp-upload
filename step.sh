@@ -59,6 +59,8 @@ print_command_cleanup_and_exit_on_error
 echo "FTP_UPLOAD_SOURCE_PATH: ${FTP_UPLOAD_SOURCE_PATH}"
 echo "FTP_UPLOAD_TARGET_PATH: ${FTP_UPLOAD_TARGET_PATH}"
 
+echo " (i) Uploading: ${FTP_UPLOAD_SOURCE_PATH} -> ${FTP_UPLOAD_TARGET_PATH}"
+
 let targets_last_index=${#FTP_UPLOAD_TARGET_PATH}-1
 if [[ -d "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
   # source: dir | target: dir
@@ -72,7 +74,7 @@ elif [[ -f "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
     # source: file | target: dir
     if [ "$FTP_UPLOAD_SOURCE_PATH" = "" ] ; then
       # target: rootdir
-      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O './' ${FTP_UPLOAD_SOURCE_PATH}; bye"
+      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O '/' ${FTP_UPLOAD_SOURCE_PATH}; bye"
     else
       lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mkdir -p ${FTP_UPLOAD_TARGET_PATH}; bye"
       lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O ${FTP_UPLOAD_TARGET_PATH} ${FTP_UPLOAD_SOURCE_PATH}; bye"
@@ -83,7 +85,7 @@ elif [[ -f "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
     target_filename="$(basename ${FTP_UPLOAD_TARGET_PATH})"
     if [ "$target_directory" = "" ] ; then
       # target-dir: rootdir
-      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O './' ${FTP_UPLOAD_SOURCE_PATH} -o ${target_filename}; bye"
+      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O '/' ${FTP_UPLOAD_SOURCE_PATH} -o ${target_filename}; bye"
     else
       lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mkdir -p ${target_directory}; bye"
       lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O ${target_directory} ${FTP_UPLOAD_SOURCE_PATH} -o ${target_filename}; bye"
