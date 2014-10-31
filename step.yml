@@ -3,6 +3,8 @@
 name: FTP Upload
 description: |
   Upload a single file or a folder (recursively) to an FTP server.
+  
+  This Step is part of the [Open StepLib](http://www.steplib.com/), you can find its StepLib page [here](http://www.steplib.com/step/ftp-upload)
 
 inputs:
   - title: |
