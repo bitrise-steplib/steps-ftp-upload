@@ -3,6 +3,8 @@ steps-ftp-upload
 
 Bitrise step to upload a single file or a folder to an FTP server
 
+This Step is part of the [Open StepLib](http://www.steplib.com/), you can find its StepLib page [here](http://www.steplib.com/step/ftp-upload)
+
 # Input Environment Variables
 
 See the *step.yml* file.
