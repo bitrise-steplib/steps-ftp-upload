@@ -4,12 +4,19 @@ formatted_output_file_path="${BITRISE_STEP_FORMATTED_OUTPUT_FILE_PATH}"
 
 function echo_string_to_formatted_output {
   echo "$1" >> $formatted_output_file_path
+  # debug
+  echo "$1"
 }
 
 function write_section_to_formatted_output {
   echo '' >> $formatted_output_file_path
   echo "$1" >> $formatted_output_file_path
   echo '' >> $formatted_output_file_path
+
+  # debug
+  echo ''
+  echo "$1"
+  echo ''
 }
 
 function do_failed_cleanup {
@@ -53,8 +60,9 @@ fi
   set -e
   brew install lftp
 
-  echo "FTP_UPLOAD_SOURCE_PATH: ${FTP_UPLOAD_SOURCE_PATH}"
-  echo "FTP_UPLOAD_TARGET_PATH: ${FTP_UPLOAD_TARGET_PATH}"
+  write_section_to_formatted_output "# Uploading:"
+  echo_string_to_formatted_output "* from: \`${FTP_UPLOAD_SOURCE_PATH}\`"
+  echo_string_to_formatted_output "* to: \`${FTP_UPLOAD_TARGET_PATH}\`"
 
   echo " (i) Uploading: ${FTP_UPLOAD_SOURCE_PATH} -> ${FTP_UPLOAD_TARGET_PATH}"
 
