@@ -21,5 +21,4 @@ inputs:
   - title: |
       The target (remote) path for the FTP upload.
       Target is handled as directory if ends with "/", file otherwise.
-      Format examples: "$HOME/temp" or "$HOME/temp/"; default is / (root)
     mapped_to: FTP_UPLOAD_TARGET_PATH
