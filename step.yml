@@ -3,22 +3,49 @@
 name: FTP Upload
 description: |
   Upload a single file or a folder (recursively) to an FTP server.
-
+website: https://github.com/bitrise-io/steps-ftp-upload
+fork_url: https://github.com/bitrise-io/steps-ftp-upload
+source:
+  git: https://github.com/bitrise-io/steps-ftp-upload.git
+host_os_tags:
+  - osx-10.9
+project_type_tags: []
+type_tags:
+  - ftp
+  - uploader
+  - deploy
+is_requires_admin_user: false
 inputs:
-  - title: |
-      Host of the target FTP (example: ftp.someserver.com)
+  - 
     mapped_to: FTP_HOSTNAME
-  - title: |
-      Username
+    title: "Host"
+    description: |
+      Host of the target FTP (example: ftp.someserver.com)
+    is_required: true
+    is_expand: false
+  - 
     mapped_to: FTP_USERNAME
-  - title: |
-      Password
+    title: "Username"
+    is_required: true
+    is_expand: false
+  - 
     mapped_to: FTP_PASSWORD
-  - title: |
+    title: "Password"
+    is_required: true
+    is_expand: false
+  - 
+    mapped_to: FTP_UPLOAD_SOURCE_PATH
+    title: "Source path"
+    description: |
       The source (local) file or directory for the FTP upload.
       Format examples: "$HOME/temp" or "$HOME/temp/")
-    mapped_to: FTP_UPLOAD_SOURCE_PATH
-  - title: |
+    is_required: true
+    is_expand: false
+  - 
+    mapped_to: FTP_UPLOAD_TARGET_PATH
+    title: "Target / remote path"
+    description: |
       The target (remote) path for the FTP upload.
       Target is handled as directory if ends with "/", file otherwise.
-    mapped_to: FTP_UPLOAD_TARGET_PATH
+    is_required: true
+    is_expand: false
