@@ -24,29 +24,29 @@ function do_failed_cleanup {
   write_section_to_formatted_output "Check the Logs for details."
 }
 
-if [ ! -n "${FTP_HOSTNAME}" ]; then
-  echo ' [!] Input FTP_HOSTNAME is missing'
+if [ ! -n "${hostname}" ]; then
+  echo ' [!] Input hostname is missing'
   write_section_to_formatted_output "# Error!"
   write_section_to_formatted_output "Reason: FTP hostname is missing."
   exit 1
 fi
 
-if [ ! -n "${FTP_USERNAME}" ]; then
-  echo ' [!] Input FTP_USERNAME is missing'
+if [ ! -n "${username}" ]; then
+  echo ' [!] Input username is missing'
   write_section_to_formatted_output "# Error!"
   write_section_to_formatted_output "Reason: FTP username is missing."
   exit 1
 fi
 
-if [ ! -n "${FTP_UPLOAD_SOURCE_PATH}" ]; then
-  echo ' [!] Input FTP_UPLOAD_SOURCE_PATH is missing'
+if [ ! -n "${upload_source_path}" ]; then
+  echo ' [!] Input upload_source_path is missing'
   write_section_to_formatted_output "# Error!"
   write_section_to_formatted_output "Reason: FTP upload source path is missing."
   exit 1
 fi
 
-if [ ! -n "${FTP_PASSWORD}" ]; then
-  echo ' [!] Input FTP_PASSWORD is missing'
+if [ ! -n "${password}" ]; then
+  echo ' [!] Input password is missing'
   write_section_to_formatted_output "# Error!"
   write_section_to_formatted_output "Reason: FTP user password is missing."
   exit 1
@@ -61,43 +61,43 @@ fi
   brew install lftp
 
   write_section_to_formatted_output "# Uploading:"
-  echo_string_to_formatted_output "* from: \`${FTP_UPLOAD_SOURCE_PATH}\`"
-  echo_string_to_formatted_output "* to: \`${FTP_UPLOAD_TARGET_PATH}\`"
+  echo_string_to_formatted_output "* from: \`${upload_source_path}\`"
+  echo_string_to_formatted_output "* to: \`${upload_target_path}\`"
 
-  echo " (i) Uploading: ${FTP_UPLOAD_SOURCE_PATH} -> ${FTP_UPLOAD_TARGET_PATH}"
+  echo " (i) Uploading: ${upload_source_path} -> ${upload_target_path}"
 
-  let targets_last_index=${#FTP_UPLOAD_TARGET_PATH}-1
-  if [[ -d "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
+  let targets_last_index=${#upload_target_path}-1
+  if [[ -d "${upload_source_path}" ]] ; then
     # source: dir | target: dir
-    if [ "${FTP_UPLOAD_TARGET_PATH:$targets_last_index:1}" = "/" ]; then
-      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mirror -R ${FTP_UPLOAD_SOURCE_PATH} ${FTP_UPLOAD_TARGET_PATH%?}; bye"
+    if [ "${upload_target_path:$targets_last_index:1}" = "/" ]; then
+      lftp -u "${username},${password}" "${hostname}" -e "mirror -R ${upload_source_path} ${upload_target_path%?}; bye"
     else
-      lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mirror -R ${FTP_UPLOAD_SOURCE_PATH} ${FTP_UPLOAD_TARGET_PATH}; bye"
+      lftp -u "${username},${password}" "${hostname}" -e "mirror -R ${upload_source_path} ${upload_target_path}; bye"
     fi
-  elif [[ -f "${FTP_UPLOAD_SOURCE_PATH}" ]] ; then
-    if [ "${FTP_UPLOAD_TARGET_PATH:$targets_last_index:1}" = "/" ]; then
+  elif [[ -f "${upload_source_path}" ]] ; then
+    if [ "${upload_target_path:$targets_last_index:1}" = "/" ]; then
       # source: file | target: dir
-      if [ "$FTP_UPLOAD_SOURCE_PATH" = "" ] ; then
+      if [ "$upload_source_path" = "" ] ; then
         # target: rootdir
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O '/' ${FTP_UPLOAD_SOURCE_PATH}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "put -O '/' ${upload_source_path}; bye"
       else
         set +e
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mkdir -p ${FTP_UPLOAD_TARGET_PATH}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "mkdir -p ${upload_target_path}; bye"
         set -e
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O ${FTP_UPLOAD_TARGET_PATH} ${FTP_UPLOAD_SOURCE_PATH}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "put -O ${upload_target_path} ${upload_source_path}; bye"
       fi
     else
       # source: file | target: file
-      target_directory="$(dirname ${FTP_UPLOAD_TARGET_PATH})"
-      target_filename="$(basename ${FTP_UPLOAD_TARGET_PATH})"
+      target_directory="$(dirname ${upload_target_path})"
+      target_filename="$(basename ${upload_target_path})"
       if [ "$target_directory" = "" ] ; then
         # target-dir: rootdir
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O '/' ${FTP_UPLOAD_SOURCE_PATH} -o ${target_filename}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "put -O '/' ${upload_source_path} -o ${target_filename}; bye"
       else
         set +e
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "mkdir -p ${target_directory}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "mkdir -p ${target_directory}; bye"
         set -e
-        lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_HOSTNAME}" -e "put -O ${target_directory} ${FTP_UPLOAD_SOURCE_PATH} -o ${target_filename}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "put -O ${target_directory} ${upload_source_path} -o ${target_filename}; bye"
       fi
     fi
   else
