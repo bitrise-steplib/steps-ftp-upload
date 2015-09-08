@@ -64,3 +64,4 @@ inputs:
       is_required: true
       is_expand: false
       is_dont_change_value: false
+outputs: []
