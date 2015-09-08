@@ -1,12 +1,10 @@
-
----
-name: "FTP Upload"
-description: |
+title: "FTP Upload"
+summary: "FTP Upload"
+description: |-
   Upload a single file or a folder (recursively) to an FTP server.
 website: https://github.com/bitrise-io/steps-ftp-upload
-fork_url: https://github.com/bitrise-io/steps-ftp-upload
-source:
-  git: https://github.com/bitrise-io/steps-ftp-upload.git
+source_code_url: https://github.com/bitrise-io/steps-ftp-upload
+support_url: https://github.com/bitrise-io/steps-ftp-upload/issues
 host_os_tags:
   - osx-10.9
 project_type_tags: []
@@ -15,37 +13,55 @@ type_tags:
   - uploader
   - deploy
 is_requires_admin_user: false
+is_always_run: false
+is_skippable: false
+dependencies: []
+run_if: ""
 inputs:
-  - 
-    mapped_to: FTP_HOSTNAME
-    title: "Host"
-    description: |
-      Host of the target FTP (example: ftp.someserver.com)
-    is_required: true
-    is_expand: false
-  - 
-    mapped_to: FTP_USERNAME
-    title: "Username"
-    is_required: true
-    is_expand: false
-  - 
-    mapped_to: FTP_PASSWORD
-    title: "Password"
-    is_required: true
-    is_expand: false
-  - 
-    mapped_to: FTP_UPLOAD_SOURCE_PATH
-    title: "Source path"
-    description: |
-      The source (local) file or directory for the FTP upload.
-      Format examples: "$HOME/temp" or "$HOME/temp/")
-    is_required: true
-    is_expand: true
-  - 
-    mapped_to: FTP_UPLOAD_TARGET_PATH
-    title: "Target / remote path"
-    description: |
-      The target (remote) path for the FTP upload.
-      Target is handled as directory if ends with "/", file otherwise.
-    is_required: true
-    is_expand: false
+  - hostname: ""
+    opts:
+      title: "Host"
+      summary: ""
+      description: |-
+        Host of the target FTP (example: ftp.someserver.com)
+      is_required: true
+      is_expand: false
+      is_required: true
+      is_dont_change_value: false
+  - username: ""
+    opts:
+      title: "Username"
+      summary: ""
+      description: ""
+      is_required: true
+      is_expand: false
+      is_dont_change_value: false
+  - password: ""
+    opts:
+      title: "Password"
+      summary: ""
+      description: ""
+      is_required: true
+      is_expand: false
+      is_dont_change_value: false
+  - upload_source_path: ""
+    opts:
+      title: "Source path"
+      description: |
+        The source (local) file or directory for the FTP upload.
+        Format examples: "$HOME/temp" or "$HOME/temp/")
+      summary: ""
+      is_required: true
+      is_expand: true
+      is_dont_change_value: false
+  - upload_target_path: ""
+    opts:
+      title: "Target / remote path"
+      description: |
+        The target (remote) path for the FTP upload.
+        Target is handled as directory if ends with "/", file otherwise.
+      summary: ""
+      is_required: true
+      is_expand: false
+      is_dont_change_value: false
+outputs: []
