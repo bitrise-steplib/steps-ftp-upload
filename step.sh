@@ -1,90 +1,115 @@
 #!/bin/bash
 
-formatted_output_file_path="${BITRISE_STEP_FORMATTED_OUTPUT_FILE_PATH}"
+set -e
 
-function echo_string_to_formatted_output {
-  echo "$1" >> $formatted_output_file_path
-  # debug
-  echo "$1"
+#=======================================
+# Functions
+#=======================================
+
+RESTORE='\033[0m'
+RED='\033[00;31m'
+YELLOW='\033[00;33m'
+BLUE='\033[00;34m'
+GREEN='\033[00;32m'
+
+function color_echo {
+	color=$1
+	msg=$2
+	echo -e "${color}${msg}${RESTORE}"
 }
 
-function write_section_to_formatted_output {
-  echo '' >> $formatted_output_file_path
-  echo "$1" >> $formatted_output_file_path
-  echo '' >> $formatted_output_file_path
-
-  # debug
-  echo ''
-  echo "$1"
-  echo ''
+function echo_fail {
+	msg=$1
+	echo
+	color_echo "${RED}" "${msg}"
+	exit 1
 }
 
-function do_failed_cleanup {
-  write_section_to_formatted_output "# FTP upload failed!"
-  write_section_to_formatted_output "Check the Logs for details."
+function echo_warn {
+	msg=$1
+	color_echo "${YELLOW}" "${msg}"
 }
 
-if [ ! -n "${hostname}" ]; then
-  echo ' [!] Input hostname is missing'
-  write_section_to_formatted_output "# Error!"
-  write_section_to_formatted_output "Reason: FTP hostname is missing."
-  exit 1
+function echo_info {
+	msg=$1
+	echo
+	color_echo "${BLUE}" "${msg}"
+}
+
+function echo_details {
+	msg=$1
+	echo "  ${msg}"
+}
+
+function echo_done {
+	msg=$1
+	color_echo "${GREEN}" "  ${msg}"
+}
+
+function validate_required_input {
+	key=$1
+	value=$2
+	if [ -z "${value}" ] ; then
+		echo_fail "[!] Missing required input: ${key}"
+	fi
+}
+
+#=======================================
+# Main
+#=======================================
+
+# Validate parameters
+echo_info "Configs:"
+echo_details "* hostname: $hostname"
+echo_details "* username: $username"
+echo_details "* password: $password"
+echo_details "* upload_source_path: $upload_source_path"
+echo_details "* upload_target_path: $upload_target_path"
+
+validate_required_input "hostname" $hostname
+validate_required_input "username" $username
+validate_required_input "password" $password
+validate_required_input "upload_source_path" $upload_source_path
+validate_required_input "upload_target_path" $upload_target_path
+
+os=$(uname -s)
+
+if [[ "$os" == "Darwin" ]] ; then
+  echo_info "Installing lftp on Darwin"
+  echo_details "$ brew install lftp"
+
+  brew install lftp
+elif [[ "$os" == "Linux" ]] ; then
+  echo_info "Installing lftp on Linux"
+  echo_details "$ sudo apt-get install lftp"
+
+  sudo apt-get install lftp
+else
+  echo_fail "unkown os: $os, supported: [Darwin, Linux]"
 fi
 
-if [ ! -n "${username}" ]; then
-  echo ' [!] Input username is missing'
-  write_section_to_formatted_output "# Error!"
-  write_section_to_formatted_output "Reason: FTP username is missing."
-  exit 1
-fi
-
-if [ ! -n "${upload_source_path}" ]; then
-  echo ' [!] Input upload_source_path is missing'
-  write_section_to_formatted_output "# Error!"
-  write_section_to_formatted_output "Reason: FTP upload source path is missing."
-  exit 1
-fi
-
-if [ ! -n "${password}" ]; then
-  echo ' [!] Input password is missing'
-  write_section_to_formatted_output "# Error!"
-  write_section_to_formatted_output "Reason: FTP user password is missing."
-  exit 1
-fi
-
-
-# -------------
-# --- Main
+echo_info "Uploading ${upload_source_path} -> ${upload_target_path}"
 
 (
-  set -e
-  brew install lftp
-
-  write_section_to_formatted_output "# Uploading:"
-  echo_string_to_formatted_output "* from: \`${upload_source_path}\`"
-  echo_string_to_formatted_output "* to: \`${upload_target_path}\`"
-
-  echo " (i) Uploading: ${upload_source_path} -> ${upload_target_path}"
-
   let targets_last_index=${#upload_target_path}-1
   if [[ -d "${upload_source_path}" ]] ; then
     # source: dir | target: dir
     if [ "${upload_target_path:$targets_last_index:1}" = "/" ]; then
-      lftp -u "${username},${password}" "${hostname}" -e "mirror -R ${upload_source_path} ${upload_target_path%?}; bye"
+      lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; mirror -R ${upload_source_path} ${upload_target_path%?}; bye"
     else
-      lftp -u "${username},${password}" "${hostname}" -e "mirror -R ${upload_source_path} ${upload_target_path}; bye"
+      lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; mirror -R ${upload_source_path} ${upload_target_path}; bye"
     fi
   elif [[ -f "${upload_source_path}" ]] ; then
     if [ "${upload_target_path:$targets_last_index:1}" = "/" ]; then
       # source: file | target: dir
       if [ "$upload_source_path" = "" ] ; then
         # target: rootdir
-        lftp -u "${username},${password}" "${hostname}" -e "put -O '/' ${upload_source_path}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; put -O '/' ${upload_source_path}; bye"
       else
         set +e
-        lftp -u "${username},${password}" "${hostname}" -e "mkdir -p ${upload_target_path}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; mkdir -p ${upload_target_path}; bye"
         set -e
-        lftp -u "${username},${password}" "${hostname}" -e "put -O ${upload_target_path} ${upload_source_path}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; put -O ${upload_target_path} ${upload_source_path}; bye"
       fi
     else
       # source: file | target: file
@@ -92,12 +117,12 @@ fi
       target_filename="$(basename ${upload_target_path})"
       if [ "$target_directory" = "" ] ; then
         # target-dir: rootdir
-        lftp -u "${username},${password}" "${hostname}" -e "put -O '/' ${upload_source_path} -o ${target_filename}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; put -O '/' ${upload_source_path} -o ${target_filename}; bye"
       else
         set +e
-        lftp -u "${username},${password}" "${hostname}" -e "mkdir -p ${target_directory}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; mkdir -p ${target_directory}; bye"
         set -e
-        lftp -u "${username},${password}" "${hostname}" -e "put -O ${target_directory} ${upload_source_path} -o ${target_filename}; bye"
+        lftp -u "${username},${password}" "${hostname}" -e "set ftp:ssl-allow no; put -O ${target_directory} ${upload_source_path} -o ${target_filename}; bye"
       fi
     fi
   else
@@ -106,9 +131,7 @@ fi
   fi
 )
 if [ $? -ne 0 ] ; then
-  do_failed_cleanup
-  echo " [!] Failed!"
-  exit 1
+  echo_fail "Upload failed"
 fi
 
-write_section_to_formatted_output "# FTP upload successful!"
+echo_done "Upload succed"
