@@ -25,25 +25,19 @@ inputs:
       description: |-
         Host of the target FTP (example: ftp.someserver.com)
       is_required: true
-      is_expand: false
       is_required: true
-      is_dont_change_value: false
   - username: ""
     opts:
       title: "Username"
       summary: ""
       description: ""
       is_required: true
-      is_expand: false
-      is_dont_change_value: false
   - password: ""
     opts:
       title: "Password"
       summary: ""
       description: ""
       is_required: true
-      is_expand: false
-      is_dont_change_value: false
   - upload_source_path: ""
     opts:
       title: "Source path"
@@ -53,7 +47,6 @@ inputs:
       summary: ""
       is_required: true
       is_expand: true
-      is_dont_change_value: false
   - upload_target_path: ""
     opts:
       title: "Target / remote path"
@@ -62,6 +55,4 @@ inputs:
         Target is handled as directory if ends with "/", file otherwise.
       summary: ""
       is_required: true
-      is_expand: false
-      is_dont_change_value: false
 outputs: []
