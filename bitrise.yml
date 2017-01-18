@@ -1,4 +1,4 @@
-format_version: 0.9.10
+format_version: 1.3.1
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
@@ -13,13 +13,25 @@ workflows:
   # --- workflow to Step Test
   test:
     steps:
+    - change-workdir:
+        title: Switch working dir to ./_tmp dir
+        run_if: true
+        inputs:
+        - path: ./_tmp
+        - is_create_path: true
+    - script:
+        title: Create file to upload
+        inputs:
+        - content: |-
+            echo "Hello bitrise!" >> test.txt
+            date >> test.txt
     - path::./:
         inputs:
         - hostname: $HOSTNAME
         - username: $USERNAME
         - password: $PASSWORD
-        - upload_source_path: ./_tmp/test.txt
-        - upload_target_path: /htdocs/test1.txt
+        - upload_source_path: "test.txt"
+        - upload_target_path: "/htdocs/bitrise-test.txt"
 
   # ----------------------------------------------------------------
   # --- workflows to create Release
