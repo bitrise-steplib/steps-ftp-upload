@@ -60,9 +60,6 @@ function validate_required_input {
 
 # Validate parameters
 echo_info "Configs:"
-echo_details "* hostname: $hostname"
-echo_details "* username: $username"
-echo_details "* password: $password"
 echo_details "* upload_source_path: $upload_source_path"
 echo_details "* upload_target_path: $upload_target_path"
 
