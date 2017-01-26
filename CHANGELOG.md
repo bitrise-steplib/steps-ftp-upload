@@ -1,6 +1,10 @@
-## Changelog (Current version: 2.0.2)
+## Changelog (Current version: 2.0.3)
 
 -----------------
+
+### 2.0.3 (2017 Jan 26)
+
+* [aad57a3] removed secret fields from logs, close #10 (#11)
 
 ### 2.0.2 (2017 Jan 18)
 
@@ -37,4 +41,4 @@
 
 -----------------
 
-Updated: 2017 Jan 18
+Updated: 2017 Jan 26
