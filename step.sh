@@ -82,9 +82,9 @@ os=$(uname -s)
 
 if [[ "$os" == "Darwin" ]] ; then
   echo_info "Installing lftp on Darwin"
-  echo_details "$ brew install homebrew/boneyard/lftp"
+  echo_details "$ brew install lftp"
 
-  brew install homebrew/boneyard/lftp
+  brew install lftp
 elif [[ "$os" == "Linux" ]] ; then
   echo_info "Installing lftp on Linux"
   echo_details "$ sudo apt-get install lftp"
