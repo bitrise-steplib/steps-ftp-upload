@@ -149,7 +149,7 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 			mkdirPath = filepath.Join(mkdirPath, pItem)
 			if err := ftp.Mkd(mkdirPath); err != nil {
 				if configs.DebugMode {
-					log.Warnf("Warning: %s", mkdirPath)
+					log.Warnf("Warning: %+v", err)
 				}
 			}
 		}
@@ -160,7 +160,7 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 			mkdirPath = filepath.Join(mkdirPath, pItem)
 			if err := ftp.Mkd(mkdirPath); err != nil {
 				if configs.DebugMode {
-					log.Warnf("Warning: %s", mkdirPath)
+					log.Warnf("Warning: %+v", err)
 				}
 			}
 		}
