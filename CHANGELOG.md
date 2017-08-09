@@ -1,6 +1,10 @@
-## Changelog (Current version: 2.1.0)
+## Changelog (Current version: 2.1.1)
 
 -----------------
+
+### 2.1.1 (2017 Aug 09)
+
+* [7a907b9] Prepare for 2.1.1
 
 ### 2.1.0 (2017 Aug 09)
 
