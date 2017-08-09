@@ -1,6 +1,12 @@
-## Changelog (Current version: 2.0.4)
+## Changelog (Current version: 2.1.0)
 
 -----------------
+
+### 2.1.0 (2017 Aug 09)
+
+* [4d5a3e8] Prepare for 2.1.0
+* [ab151fa] Go rebase and log issue fix (#14)
+* [852e0d4] Update release_config.yml
 
 ### 2.0.4 (2017 Feb 20)
 
@@ -47,4 +53,4 @@
 
 -----------------
 
-Updated: 2017 Feb 20
+Updated: 2017 Aug 09
