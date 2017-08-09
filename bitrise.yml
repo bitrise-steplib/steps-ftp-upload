@@ -6,14 +6,16 @@ app:
   - RELEASE_VERSION: 2.0.4
 
   # define these in your .bitrise.secrets.yml
-  - HOSTNAME: $HOSTNAME
-  - USERNAME: $USERNAME
-  - PASSWORD: $PASSWORD
+  - hostname: $HOSTNAME
+  - username: $USERNAME
+  - password: $PASSWORD
 
 workflows:
   # ----------------------------------------------------------------
   # --- workflow to Step Test
   test:
+    before_run:
+    - go-tests
     steps:
     - change-workdir:
         title: Switch working dir to ./_tmp dir
@@ -21,6 +23,7 @@ workflows:
         inputs:
         - path: ./_tmp
         - is_create_path: true
+    
     - script:
         title: Create file to upload
         inputs:
@@ -29,11 +32,91 @@ workflows:
             date >> test.txt
     - path::./:
         inputs:
-        - hostname: $HOSTNAME
-        - username: $USERNAME
-        - password: $PASSWORD
+        - hostname: $hostname
+        - username: $username
+        - password: $password
+        - debug_mode: false
         - upload_source_path: "test.txt"
         - upload_target_path: "/htdocs/bitrise-test.txt"
+
+  go-tests:
+    before_run:
+    - _install-test-tools
+    steps:
+    - script:
+        title: Export go files to test
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            no_vendor_paths="$(go list ./... | grep -v vendor)"
+            envman add --key GOLIST_WITHOUT_VENDOR --value "$no_vendor_paths"
+    - script:
+        title: Err check
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            errcheck -asserts=true -blank=true $GOLIST_WITHOUT_VENDOR
+    - script:
+        title: Go lint
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            while read -r line; do
+              echo "-> Linting: $line"
+              golint_out="$(golint $line)"
+              if [[ "${golint_out}" != "" ]] ; then
+                echo "=> Golint issues found:"
+                echo "${golint_out}"
+                exit 1
+              fi
+            done <<< "$GOLIST_WITHOUT_VENDOR"
+    - script:
+        title: Go test
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            go test ./...
+
+
+  _install-test-tools:
+    steps:
+    - script:
+        title: Install required testing tools
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            # Check for unhandled errors
+            go get -u -v github.com/kisielk/errcheck
+            # Go lint
+            go get -u -v github.com/golang/lint/golint
+
+  # ----------------------------------------------------------------
+  # --- Utility workflows
+  godeps-update:
+    title: Godeps update
+    description: |
+      Used for updating bitrise dependencies with godep
+    steps:
+    - script:
+        title: Dependency update
+        inputs:
+        - content: |
+            #!/bin/bash
+            set -ex
+            go get -u -v github.com/tools/godep
+            #
+            rm -rf ./Godeps
+            rm -rf ./vendor
+            #
+            go get -t -d ./...
+            go get github.com/davecgh/go-spew/spew
+            go get github.com/pmezard/go-difflib/difflib
+            godep save ./...
 
   # ----------------------------------------------------------------
   # --- workflow to create Release version
