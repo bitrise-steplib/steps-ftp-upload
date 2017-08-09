@@ -15,7 +15,15 @@ type_tags:
 is_requires_admin_user: false
 is_always_run: false
 is_skippable: false
-dependencies: []
+deps:
+  brew:
+  - name: go
+  apt_get:
+  - name: golang
+    bin_name: go
+toolkit:
+  go:
+    package_name: github.com/bitrise-io/steps-ftp-upload
 run_if: ""
 inputs:
   - hostname: ""
@@ -24,7 +32,6 @@ inputs:
       summary: ""
       description: |-
         Host of the target FTP (example: ftp.someserver.com)
-      is_required: true
       is_required: true
   - username: ""
     opts:
@@ -53,6 +60,13 @@ inputs:
       description: |
         The target (remote) path for the FTP upload.
         Target is handled as directory if ends with "/", file otherwise.
+      summary: ""
+      is_required: true
+  - debug_mode: "false"
+    opts:
+      title: "Debug mode"
+      description: |
+        The step will print more logs if this option is set to true.
       summary: ""
       is_required: true
 outputs: []
