@@ -22,8 +22,8 @@ type ConfigsModel struct {
 	DebugMode  bool
 }
 
-func createConfigsModelFromEnvs() ConfigsModel {
-	return ConfigsModel{
+func createConfigsModelFromEnvs() *ConfigsModel {
+	return &ConfigsModel{
 		HostName:   os.Getenv("hostname"),
 		Username:   os.Getenv("username"),
 		Password:   os.Getenv("password"),
@@ -75,6 +75,14 @@ func (configs ConfigsModel) validate() error {
 	return nil
 }
 
+func (configs *ConfigsModel) cleanHostName() {
+	//clean hostname, removes ftp:// prefix and if no port given sets the default :21
+	configs.HostName = strings.TrimPrefix(configs.HostName, "ftp://")
+	if !strings.Contains(configs.HostName, ":") {
+		configs.HostName += ":21"
+	}
+}
+
 func main() {
 	configs := createConfigsModelFromEnvs()
 
@@ -90,6 +98,8 @@ func main() {
 
 	var ftp *goftp.FTP
 	var err error
+
+	configs.cleanHostName()
 
 	if !configs.DebugMode {
 		ftp, err = goftp.Connect(configs.HostName)

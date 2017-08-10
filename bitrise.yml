@@ -32,7 +32,31 @@ workflows:
             date >> test.txt
     - path::./:
         inputs:
-        - hostname: $hostname
+        - hostname: "ftp://$hostname" #ftp prefix
+        - username: $username
+        - password: $password
+        - debug_mode: false
+        - upload_source_path: "test.txt"
+        - upload_target_path: "/htdocs/bitrise-test.txt"
+    - path::./:
+        inputs:
+        - hostname: $hostname #clean
+        - username: $username
+        - password: $password
+        - debug_mode: false
+        - upload_source_path: "test.txt"
+        - upload_target_path: "/htdocs/bitrise-test.txt"
+    - path::./:
+        inputs:
+        - hostname: "ftp://$hostname:21" #both
+        - username: $username
+        - password: $password
+        - debug_mode: false
+        - upload_source_path: "test.txt"
+        - upload_target_path: "/htdocs/bitrise-test.txt"
+    - path::./:
+        inputs:
+        - hostname: "$hostname:21" #both
         - username: $username
         - password: $password
         - debug_mode: false

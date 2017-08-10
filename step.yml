@@ -26,10 +26,10 @@ run_if: ""
 inputs:
   - hostname: ""
     opts:
-      title: "Host"
+      title: "Host (example: ftp.someserver.com:21)"
       summary: ""
       description: |-
-        Host of the target FTP (example: ftp.someserver.com)
+        Host of the target FTP (example: ftp.someserver.com:21)
       is_required: true
   - username: ""
     opts:

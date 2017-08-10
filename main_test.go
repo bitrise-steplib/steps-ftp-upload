@@ -42,6 +42,26 @@ var filesMustBeUploaded = []string{
 
 func Test_sync(t *testing.T) {
 	configs := createConfigsModelFromEnvs()
+	configs.cleanHostName()
+	origHostName := configs.HostName
+
+	configs.HostName = "ftp.myhost.com"
+	configs.cleanHostName()
+	require.Equal(t, "ftp.myhost.com:21", configs.HostName)
+
+	configs.HostName = "ftp://ftp.myhost.com"
+	configs.cleanHostName()
+	require.Equal(t, "ftp.myhost.com:21", configs.HostName)
+
+	configs.HostName = "ftp://ftp.myhost.com:21"
+	configs.cleanHostName()
+	require.Equal(t, "ftp.myhost.com:21", configs.HostName)
+
+	configs.HostName = "ftp.myhost.com:21"
+	configs.cleanHostName()
+	require.Equal(t, "ftp.myhost.com:21", configs.HostName)
+
+	configs.HostName = origHostName
 
 	tmpPath, err := pathutil.NormalizedOSTempDirPath("_ftp_test_")
 	require.NoError(t, err)
