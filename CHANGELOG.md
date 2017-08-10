@@ -1,6 +1,11 @@
-## Changelog (Current version: 2.1.1)
+## Changelog (Current version: 2.1.2)
 
 -----------------
+
+### 2.1.2 (2017 Aug 10)
+
+* [c7f96ea] Prepare for 2.1.2
+* [1774863] Hostname clean-up added
 
 ### 2.1.1 (2017 Aug 09)
 
@@ -57,4 +62,4 @@
 
 -----------------
 
-Updated: 2017 Aug 09
+Updated: 2017 Aug 10
