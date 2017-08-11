@@ -210,8 +210,12 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 		case fi.Mode()&os.ModeType == 0:
 			rPath := filepath.Join(remotePath, relPath)
 
-			if strings.HasSuffix(remotePath, "/") && !localFileInfo.IsDir() {
+			if localFileInfo.IsDir() {
 				rPath = filepath.Join(rPath, fi.Name())
+			} else {
+				if strings.HasSuffix(remotePath, "/") {
+					rPath = filepath.Join(rPath, fi.Name())
+				}
 			}
 
 			if err = copyFile(ftp, path, rPath); err != nil {
