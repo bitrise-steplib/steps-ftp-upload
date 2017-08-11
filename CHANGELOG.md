@@ -1,6 +1,11 @@
-## Changelog (Current version: 2.1.2)
+## Changelog (Current version: 2.1.3)
 
 -----------------
+
+### 2.1.3 (2017 Aug 11)
+
+* [9fe9d14] Prepare for 2.1.3
+* [ed8537f] Mlsd fix (#16)
 
 ### 2.1.2 (2017 Aug 10)
 
@@ -62,4 +67,4 @@
 
 -----------------
 
-Updated: 2017 Aug 10
+Updated: 2017 Aug 11
