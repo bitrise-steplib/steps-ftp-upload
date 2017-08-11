@@ -191,8 +191,8 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 			}
 			rPath := filepath.Join(remotePath, relPath)
 			if err = ftp.Mkd(rPath); err != nil {
-				if _, err = ftp.List(rPath + "/"); err != nil {
-					return err
+				if configs.DebugMode {
+					log.Warnf("Warning: %+v", err)
 				}
 			}
 		case fi.Mode()&os.ModeSymlink == os.ModeSymlink:
