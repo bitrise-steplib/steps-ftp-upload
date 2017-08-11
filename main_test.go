@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/bitrise-io/go-utils/fileutil"
@@ -24,13 +25,13 @@ var filesMustBeUploaded = []string{
 	"/htdocs/test1/inner/inner2/file1.txt",
 	"/htdocs/test1/inner/inner2/inner3/file1.txt",
 	"/htdocs/test1/inner/inner2/inner3/inner4/file1.txt",
-	"/htdocs/test2/file1.txt",
-	"/htdocs/test2/file2.txt",
-	"/htdocs/test2/file3.txt",
-	"/htdocs/test2/inner/file1.txt",
-	"/htdocs/test2/inner/inner2/file1.txt",
-	"/htdocs/test2/inner/inner2/inner3/file1.txt",
-	"/htdocs/test2/inner/inner2/inner3/inner4/file1.txt",
+	"/htdocs/test2/[{temp_dir_name}]/file1.txt",
+	"/htdocs/test2/[{temp_dir_name}]/file2.txt",
+	"/htdocs/test2/[{temp_dir_name}]/file3.txt",
+	"/htdocs/test2/[{temp_dir_name}]/inner/file1.txt",
+	"/htdocs/test2/[{temp_dir_name}]/inner/inner2/file1.txt",
+	"/htdocs/test2/[{temp_dir_name}]/inner/inner2/inner3/file1.txt",
+	"/htdocs/test2/[{temp_dir_name}]/inner/inner2/inner3/inner4/file1.txt",
 	"/htdocs/test3/test1/test2/test3/file1.txt",
 	"/htdocs/test3/test1/test2/test3/file2.txt",
 	"/htdocs/test3/test1/test2/test3/file3.txt",
@@ -65,6 +66,9 @@ func Test_sync(t *testing.T) {
 
 	tmpPath, err := pathutil.NormalizedOSTempDirPath("_ftp_test_")
 	require.NoError(t, err)
+
+	tmpPathSplit := strings.Split(tmpPath, "/")
+	tmpPathName := tmpPathSplit[len(tmpPathSplit)-1]
 
 	pth := filepath.Join(tmpPath, "file1.txt")
 	require.NoError(t, pathutil.EnsureDirExist(filepath.Dir(pth)))
@@ -135,8 +139,9 @@ func Test_sync(t *testing.T) {
 	log.Infof("%+v", filesUploaded)
 
 	for _, file := range filesMustBeUploaded {
-		if !sliceutil.IsStringInSlice(file, filesUploaded) {
-			require.FailNow(t, "File is not uploaded: "+file)
+		expandedPath := strings.Replace(file, "[{temp_dir_name}]", tmpPathName, -1)
+		if !sliceutil.IsStringInSlice(expandedPath, filesUploaded) {
+			require.FailNow(t, "File is not uploaded: "+expandedPath)
 		}
 	}
 }
