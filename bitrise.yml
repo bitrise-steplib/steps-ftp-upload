@@ -30,12 +30,15 @@ workflows:
         - content: |-
             echo "Hello bitrise!" >> test.txt
             date >> test.txt
+            mkdir "./test-dir"
+            echo "Hello bitrise!" >> ./test-dir/test.txt
+            date >> ./test-dir/test.txt
     - path::./:
         inputs:
         - hostname: "ftp://$hostname" #ftp prefix
         - username: $username
         - password: $password
-        - debug_mode: false
+        - debug_mode: true
         - upload_source_path: "test.txt"
         - upload_target_path: "/htdocs/bitrise-test.txt"
     - path::./:
@@ -43,25 +46,25 @@ workflows:
         - hostname: $hostname #clean
         - username: $username
         - password: $password
-        - debug_mode: false
+        - debug_mode: true
         - upload_source_path: "test.txt"
-        - upload_target_path: "/htdocs/bitrise-test.txt"
+        - upload_target_path: "/htdocs/"
     - path::./:
         inputs:
         - hostname: "ftp://$hostname:21" #both
         - username: $username
         - password: $password
-        - debug_mode: false
-        - upload_source_path: "test.txt"
-        - upload_target_path: "/htdocs/bitrise-test.txt"
+        - debug_mode: true
+        - upload_source_path: "./test-dir"
+        - upload_target_path: "/htdocs/bitrise-dir"
     - path::./:
         inputs:
         - hostname: "$hostname:21" #both
         - username: $username
         - password: $password
-        - debug_mode: false
-        - upload_source_path: "test.txt"
-        - upload_target_path: "/htdocs/bitrise-test.txt"
+        - debug_mode: true
+        - upload_source_path: "./test-dir"
+        - upload_target_path: "/htdocs/bitrise-dir2/"
 
   go-tests:
     before_run:

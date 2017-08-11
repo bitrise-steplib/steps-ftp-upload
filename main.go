@@ -144,34 +144,27 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 		return err
 	}
 
-	localFileInfo, err := os.Stat(localPath)
+	localFileInfo, err := os.Stat(fullPath)
 	if err != nil {
 		return err
 	}
 
-	if localFileInfo.IsDir() {
-		if !strings.HasSuffix(remotePath, "/") {
-			remotePath += "/"
-		}
-		splitPath := strings.Split(remotePath, "/")
-		mkdirPath := "/"
-		for _, pItem := range splitPath {
-			mkdirPath = filepath.Join(mkdirPath, pItem)
-			if err := ftp.Mkd(mkdirPath); err != nil {
-				if configs.DebugMode {
-					log.Warnf("Warning: %+v", err)
-				}
-			}
-		}
-	} else {
-		splitPath := strings.Split(remotePath, "/")
-		mkdirPath := "/"
-		for _, pItem := range strings.Split(remotePath, "/")[:len(splitPath)-1] {
-			mkdirPath = filepath.Join(mkdirPath, pItem)
-			if err := ftp.Mkd(mkdirPath); err != nil {
-				if configs.DebugMode {
-					log.Warnf("Warning: %+v", err)
-				}
+	if localFileInfo.IsDir() && strings.HasSuffix(remotePath, "/") {
+		remotePath = filepath.Join(remotePath, localFileInfo.Name())
+	}
+
+	splitPath := strings.Split(remotePath, "/")
+	mkdirPath := "/"
+	remotePathsToMake := splitPath
+	if !localFileInfo.IsDir() {
+		remotePathsToMake = splitPath[:len(splitPath)-1]
+	}
+
+	for _, pItem := range remotePathsToMake {
+		mkdirPath = filepath.Join(mkdirPath, pItem)
+		if err := ftp.Mkd(mkdirPath); err != nil {
+			if configs.DebugMode {
+				log.Warnf("Warning: %+v", err)
 			}
 		}
 	}
@@ -191,8 +184,8 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 			}
 			rPath := filepath.Join(remotePath, relPath)
 			if err = ftp.Mkd(rPath); err != nil {
-				if _, err = ftp.List(rPath + "/"); err != nil {
-					return err
+				if configs.DebugMode {
+					log.Warnf("Warning: %+v", err)
 				}
 			}
 		case fi.Mode()&os.ModeSymlink == os.ModeSymlink:
@@ -210,7 +203,7 @@ func (configs ConfigsModel) sync(ftp *goftp.FTP, localPath, remotePath string) e
 		case fi.Mode()&os.ModeType == 0:
 			rPath := filepath.Join(remotePath, relPath)
 
-			if strings.HasSuffix(remotePath, "/") && !localFileInfo.IsDir() {
+			if !localFileInfo.IsDir() && strings.HasSuffix(remotePath, "/") {
 				rPath = filepath.Join(rPath, fi.Name())
 			}
 
