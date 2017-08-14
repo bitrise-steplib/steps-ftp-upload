@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/bitrise-io/go-utils/log"
+	"github.com/bitrise-io/steps-ftp-upload/goftp"
 	"github.com/bitrise-tools/go-steputils/input"
-	"github.com/dutchcoders/goftp"
 )
 
 // ConfigsModel ...
