@@ -9,7 +9,7 @@ import (
 
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-tools/go-steputils/input"
-	"github.com/dutchcoders/goftp"
+	"github.com/bitrise-tools/goftp"
 )
 
 // ConfigsModel ...
@@ -228,8 +228,5 @@ func copyFile(ftp *goftp.FTP, localPath, serverPath string) (err error) {
 		}
 	}()
 
-	if err := ftp.Stor(serverPath, file); err != nil {
-		return err
-	}
-	return nil
+	return ftp.Stor(serverPath, file)
 }

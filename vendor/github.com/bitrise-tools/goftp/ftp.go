@@ -37,10 +37,10 @@ func (ftp *FTP) Close() error {
 }
 
 type (
-// WalkFunc is called on each path in a Walk. Errors are filtered through WalkFunc
+	// WalkFunc is called on each path in a Walk. Errors are filtered through WalkFunc
 	WalkFunc func(path string, info os.FileMode, err error) error
 
-// RetrFunc is passed to Retr and is the handler for the stream received for a given path
+	// RetrFunc is passed to Retr and is the handler for the stream received for a given path
 	RetrFunc func(r io.Reader) error
 )
 
@@ -107,7 +107,10 @@ func (ftp *FTP) Quit() (err error) {
 		return err
 	}
 
-	ftp.conn.Close()
+	err = ftp.conn.Close()
+	if err != nil {
+		return err
+	}
 	ftp.conn = nil
 
 	return nil
@@ -267,13 +270,13 @@ func (ftp *FTP) Type(t TypeCode) error {
 type TypeCode string
 
 const (
-// TypeASCII for ASCII
+	// TypeASCII for ASCII
 	TypeASCII = "A"
-// TypeEBCDIC for EBCDIC
+	// TypeEBCDIC for EBCDIC
 	TypeEBCDIC = "E"
-// TypeImage for an Image
+	// TypeImage for an Image
 	TypeImage = "I"
-// TypeLocal for local byte size
+	// TypeLocal for local byte size
 	TypeLocal = "L"
 )
 
@@ -315,7 +318,10 @@ func (ftp *FTP) receive() (string, error) {
 			}
 		}
 	}
-	ftp.ReadAndDiscard()
+	_, err = ftp.ReadAndDiscard()
+	if err != nil {
+		return "", err
+	}
 	//fmt.Println(line)
 	return line, err
 }
@@ -373,7 +379,6 @@ func (ftp *FTP) send(command string, arguments ...interface{}) error {
 }
 
 // Pasv enables passive data connection and returns port number
-
 func (ftp *FTP) Pasv() (port int, err error) {
 	doneChan := make(chan int, 1)
 	go func() {
@@ -395,8 +400,14 @@ func (ftp *FTP) Pasv() (port int, err error) {
 			err = errors.New("PasvBadAnswer")
 			return
 		}
-		l1, _ := strconv.Atoi(s[len(s)-2])
-		l2, _ := strconv.Atoi(s[len(s)-1])
+		l1, err := strconv.Atoi(s[len(s)-2])
+		if err != nil {
+			return
+		}
+		l2, err := strconv.Atoi(s[len(s)-1])
+		if err != nil {
+			return
+		}
 
 		port = l1<<8 + l2
 
@@ -408,7 +419,10 @@ func (ftp *FTP) Pasv() (port int, err error) {
 
 	case <-time.After(time.Second * 10):
 		err = errors.New("PasvTimeout")
-		ftp.Close()
+		err = ftp.Close()
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	return
@@ -452,14 +466,19 @@ func (ftp *FTP) Stor(path string, r io.Reader) (err error) {
 	if pconn, err = ftp.newConnection(port); err != nil {
 		return
 	}
-	defer pconn.Close()
+	defer func() {
+		err := pconn.Close()
+		if err != nil {
+			return
+		}
+	}()
 
 	var line string
 	if line, err = ftp.receive(); err != nil {
 		return
 	}
 
-	if !strings.HasPrefix(line, StatusFileOK) {
+	if !strings.HasPrefix(line, StatusFileOK) && !strings.HasPrefix(line, StatusAlreadyOpen) {
 		err = errors.New(line)
 		return
 	}
@@ -467,7 +486,10 @@ func (ftp *FTP) Stor(path string, r io.Reader) (err error) {
 	if _, err = io.Copy(pconn, r); err != nil {
 		return
 	}
-	pconn.Close()
+	err = pconn.Close()
+	if err != nil {
+		return
+	}
 
 	if line, err = ftp.receive(); err != nil {
 		return
@@ -520,8 +542,8 @@ func (ftp *FTP) Stat(path string) ([]string, error) {
 		return nil, err
 	}
 	if !strings.HasPrefix(stat, StatusFileStatus) &&
-	!strings.HasPrefix(stat, StatusDirectoryStatus) &&
-	!strings.HasPrefix(stat, StatusSystemStatus) {
+		!strings.HasPrefix(stat, StatusDirectoryStatus) &&
+		!strings.HasPrefix(stat, StatusSystemStatus) {
 		return nil, errors.New(stat)
 	}
 	if strings.HasPrefix(stat, StatusSystemStatus) {
@@ -564,7 +586,12 @@ func (ftp *FTP) Retr(path string, retrFn RetrFunc) (s string, err error) {
 	if pconn, err = ftp.newConnection(port); err != nil {
 		return
 	}
-	defer pconn.Close()
+	defer func() {
+		err = pconn.Close()
+		if err != nil {
+			return
+		}
+	}()
 
 	var line string
 	if line, err = ftp.receiveNoDiscard(); err != nil {
@@ -580,7 +607,10 @@ func (ftp *FTP) Retr(path string, retrFn RetrFunc) (s string, err error) {
 		return
 	}
 
-	pconn.Close()
+	err = pconn.Close()
+	if err != nil {
+		return
+	}
 
 	if line, err = ftp.receive(); err != nil {
 		return
@@ -617,7 +647,12 @@ func (ftp *FTP) List(path string) (files []string, err error) {
 	if pconn, err = ftp.newConnection(port); err != nil {
 		return
 	}
-	defer pconn.Close()
+	defer func() {
+		err := pconn.Close()
+		if err != nil {
+			return
+		}
+	}()
 
 	var line string
 	if line, err = ftp.receiveNoDiscard(); err != nil {
@@ -654,7 +689,10 @@ func (ftp *FTP) List(path string) (files []string, err error) {
 		files = append(files, string(line))
 	}
 	// Must close for vsftp tlsed conenction otherwise does not receive connection
-	pconn.Close()
+	err = pconn.Close()
+	if err != nil {
+		return
+	}
 
 	if line, err = ftp.receive(); err != nil {
 		return
@@ -736,7 +774,10 @@ func Connect(addr string) (*FTP, error) {
 
 	//reader.ReadString('\n')
 	object := &FTP{conn: conn, addr: addr, reader: reader, writer: writer, debug: false}
-	object.receive()
+	_, err = object.receive()
+	if err != nil {
+		return nil, err
+	}
 
 	return object, nil
 }
@@ -756,7 +797,10 @@ func ConnectDbg(addr string) (*FTP, error) {
 	var line string
 
 	object := &FTP{conn: conn, addr: addr, reader: reader, writer: writer, debug: true}
-	line, _ = object.receive()
+	line, err = object.receive()
+	if err != nil {
+		return nil, err
+	}
 
 	log.Print(line)
 
@@ -773,4 +817,3 @@ func (ftp *FTP) Size(path string) (size int, err error) {
 
 	return strconv.Atoi(line[4 : len(line)-2])
 }
-

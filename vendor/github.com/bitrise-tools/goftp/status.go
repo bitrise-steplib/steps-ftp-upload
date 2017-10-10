@@ -2,6 +2,8 @@ package goftp
 
 // FTP Status codes, defined in RFC 959
 const (
+	StatusAlreadyOpen = "125"
+
 	StatusFileOK                = "150"
 	StatusOK                    = "200"
 	StatusSystemStatus          = "211"

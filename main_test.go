@@ -10,7 +10,7 @@ import (
 	"github.com/bitrise-io/go-utils/log"
 	"github.com/bitrise-io/go-utils/pathutil"
 	"github.com/bitrise-io/go-utils/sliceutil"
-	"github.com/dutchcoders/goftp"
+	"github.com/bitrise-tools/goftp"
 	"github.com/stretchr/testify/require"
 )
 

@@ -69,7 +69,12 @@ func (ftp *FTP) copyFile(localPath, serverPath string) (err error) {
 	if file, err = os.Open(localPath); err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			return
+		}
+	}()
 	if err := ftp.Stor(serverPath, file); err != nil {
 		return err
 	}
