@@ -1,6 +1,11 @@
-## Changelog (Current version: 2.1.3)
+## Changelog (Current version: 2.1.4)
 
 -----------------
+
+### 2.1.4 (2017 Oct 10)
+
+* [6ff3781] Prepare for 2.1.4
+* [07ed9b4] added 125 Already Open status code handling (#17)
 
 ### 2.1.3 (2017 Aug 11)
 
@@ -67,4 +72,4 @@
 
 -----------------
 
-Updated: 2017 Aug 11
+Updated: 2017 Oct 10
