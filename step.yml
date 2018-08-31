@@ -25,10 +25,10 @@ run_if: ""
 inputs:
   - hostname: ""
     opts:
-      title: "Host (example: ftp.someserver.com:21)"
+      title: "Host (for example, `ftp.someserver.com:21`)"
       summary: ""
       description: |-
-        Host of the target FTP (example: ftp.someserver.com:21)
+        Host of the target FTP (for example, `ftp.someserver.com:21`)
       is_required: true
       is_sensitive: true
   - username: ""
@@ -55,7 +55,7 @@ inputs:
       is_required: true
   - upload_target_path: ""
     opts:
-      title: "Target / remote path"
+      title: "Target/remote path"
       description: |
         The target (remote) path for the FTP upload.
         Target is handled as directory if ends with "/", file otherwise.
