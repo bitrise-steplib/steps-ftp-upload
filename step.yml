@@ -1,12 +1,11 @@
-title: "FTP Upload"
+title: FTP Upload
 summary: You get what you see, upload a file or directory to the target directory
 description: |-
   Upload a single file or a folder (recursively) to an FTP server.
 website: https://github.com/bitrise-io/steps-ftp-upload
 source_code_url: https://github.com/bitrise-io/steps-ftp-upload
 support_url: https://github.com/bitrise-io/steps-ftp-upload/issues
-host_os_tags:
-  - osx-10.9
+
 project_type_tags: []
 type_tags:
   - utility
@@ -31,18 +30,21 @@ inputs:
       description: |-
         Host of the target FTP (for example, `ftp.someserver.com:21`)
       is_required: true
+      is_sensitive: true
   - username: ""
     opts:
       title: "Username"
       summary: ""
       description: ""
       is_required: true
+      is_sensitive: true
   - password: ""
     opts:
       title: "Password"
       summary: ""
       description: ""
       is_required: true
+      is_sensitive: true
   - upload_source_path: ""
     opts:
       title: "Source path"
@@ -51,7 +53,6 @@ inputs:
         Format examples: "$HOME/temp" or "$HOME/temp/")
       summary: ""
       is_required: true
-      is_expand: true
   - upload_target_path: ""
     opts:
       title: "Target/remote path"
